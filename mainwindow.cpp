@@ -17,22 +17,21 @@ MainWindow::MainWindow()
     hook->setLayout(layout);
 
     btnAddTask = new QPushButton(tr("&Add Task"));
-
-
     connect(btnAddTask, SIGNAL (released()),this, SLOT (AddNewTask()));
-    //connect(addTaskAct, &QAction::triggered, this, &MainWindow::addTask);
-
+    tasks = new QLinkedList<Task>();
+    QLinkedList<Task> *backUp;
 
 
     this->CreateMenuBar();
+    treeTable = new QTreeWidget();
+    this->SetTreeTable(treeTable);
+//    table = new QTableWidget(this);
+//    this->SetTable(table);
 
-    table = new QTableWidget(this);
-    this->SetTable(table);
-
-    layout->addWidget(table);
+    layout->addWidget(treeTable);
     layout->addWidget(btnAddTask);
 
-    PopulateTable(table);
+    PopulateTable(treeTable);
 
     this->setWindowTitle("ToDo List QT");
     this->setMinimumSize(640, 480);
@@ -68,6 +67,14 @@ void MainWindow::SetFilters(QHBoxLayout *filtersLayout)
     rbtnToday->setText(tr("&Today"));
     rbtnThisWeek->setText(tr("&This Week"));
     cboxCompleted->setText(tr("&Not Completed"));
+
+
+
+    connect(rbtnAll,SIGNAL(clicked()),this,SLOT(Filter()));
+    connect(rbtnOverdue,SIGNAL(clicked()),this,SLOT(Filter()));
+    connect(rbtnToday,SIGNAL(clicked()),this,SLOT(Filter()));
+    connect(rbtnThisWeek,SIGNAL(clicked()),this,SLOT(Filter()));
+    connect(cboxCompleted,SIGNAL(clicked()),this,SLOT(Filter()));
 
     filtersLayout->addWidget(rbtnAll);
     filtersLayout->addWidget(rbtnOverdue);
@@ -106,45 +113,120 @@ void MainWindow::AddNewTask()
     AddTask taskAdd;
     taskAdd.setModal(true);
    // taskAdd.setPath(path);
-    //taskAdd.setOrigin(this);
+    taskAdd.setOrigin(this);
     taskAdd.exec();
 }
 
-void MainWindow::SetTable(QTableWidget *table)
+
+QLinkedList<Task>* MainWindow::GetTaskList()
 {
-    table -> setColumnCount(5);
-    QStringList tableHeader;
-    tableHeader << "Finished" << "DueDate" << "Title" << "% Complete" << "Description";
-    table -> setHorizontalHeaderLabels(tableHeader);
-    table -> horizontalHeader()->setStretchLastSection(true);
-    table->setColumnWidth(0,70);
-    table->setColumnWidth(2,140);
-    //table->setModel(Task);
-//    table -> verticalHeader() -> setVisible(false);
-//    table -> setEditTriggers(QAbstractItemView::NoEditTriggers);
-//    table -> setSelectionBehavior(QAbstractItemView::SelectRows);
-//    table -> setSelectionMode(QAbstractItemView::SingleSelection);
-//    table -> setStyleSheet("QTableView {selection-background-color: #E0F7FA; selection-color: #000000;}");
-
-    //inserting data
-   // updateTable(IOManager::readFile(path));
-
-//    connect( table, SIGNAL( cellDoubleClicked (int, int) ),
-//     this, SLOT( cellSelected( int, int ) ) );
+    return tasks;
 }
 
-void MainWindow::PopulateTable(QTableWidget *table)
+void MainWindow::PopulateTable(QTreeWidget *treeTable)
 {
-    tasks = new QLinkedList<Task>();
+    treeTable->clear();
+    for(QLinkedList<Task>::iterator it=tasks->begin();it!=tasks->end();it++)
+    {
+        this->AddElement(it.i->t,treeTable);
+
+    }
+}
+
+
+void MainWindow::SetTreeTable(QTreeWidget *treeTable)
+{
     tasks->append(*(new Task("2018/03/21","What?!",0,"OKI DOKI")));
     tasks->append(*(new Task("2017/03/21","Ehh?!",0,"XXXX")));
+    tasks->append(*(new Task("2017/03/21","EWWh?!",100,"XXXX")));
+    tasks->append(*(new Task("2018/04/24","WEEE?!",25,"ZWASDSADS")));
 
-    for(int i=0;i<tasks->size();i++)
+    treeTable->setColumnCount(5);
+    QStringList tableHeader;
+    tableHeader << "Finished" << "DueDate" << "Title" << "% Complete" << "Description";
+    treeTable->setHeaderLabels(tableHeader);
+    treeTable->setColumnWidth(0,70);
+    treeTable->setColumnWidth(2,140);
+}
+
+void MainWindow::AddElement(Task task,QTreeWidget *treeTable)
+{
+    //maping and adding task
+    QTreeWidgetItem *itm = new QTreeWidgetItem(treeTable);
+    if(task.GetCompletion()!=100)
+        itm->setText(0,"X");
+    else
+        itm->setText(0,"V");
+    itm->setText(1,task.GetDueDate());
+    itm->setText(2,task.GetTitle());
+    itm->setText(3,QString::number(task.GetCompletion()));
+    itm->setText(4,task.GetDescription());
+
+
+}
+
+void MainWindow::Filter()
+{
+
+    QString currdate = QDate::currentDate().toString("yyyy/MM/dd");
+    if(cboxCompleted->isChecked())
     {
+        QTreeWidgetItemIterator it(treeTable);
+        if(rbtnAll->isChecked())
+        {
+            this->HideAllItems();
+            while (*it) {
+              if ((*it)->text(3)=="100")
+               (*it)->setHidden(false);
+              ++it;
+            }
+        }else if(rbtnToday->isChecked())
+        {
+            this->HideAllItems();
+            while (*it) {
+              if ((*it)->text(3)=="100" && (*it)->text(1)==currdate)
+               (*it)->setHidden(false);
+              ++it;
+            }
+        }
 
-        qInfo() << "C++ Style Info Message";
+
+
+
+
+    }else{
+        QTreeWidgetItemIterator it(treeTable);
+        if(rbtnAll->isChecked())
+        {
+            while (*it) {
+               (*it)->setHidden(false);
+              ++it;
+            }
+        }else if(rbtnToday->isChecked())
+        {
+            this->HideAllItems();
+            while (*it) {
+              if ((*it)->text(1)==currdate)
+               (*it)->setHidden(false);
+              ++it;
+            }
+        }
+
+
+
+
+
+
     }
+}
+void MainWindow::HideAllItems()
+{
 
+QTreeWidgetItemIterator it(treeTable);
+while (*it) {
+   (*it)->setHidden(true);
+  ++it;
+}
 }
 
 

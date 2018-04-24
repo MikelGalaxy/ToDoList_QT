@@ -2,11 +2,15 @@
 #define TASK_H
 #include <QString>
 
-class Task :public QTableModel
+class Task
 {
 public:
     Task();
     Task(QString DueDate,QString Title,int Completion,QString Description);
+    QString GetDueDate();
+    QString GetTitle();
+    int GetCompletion();
+    QString GetDescription();
 private:
     QString DueDate;
     QString Title;
