@@ -11,6 +11,7 @@ public:
     QString GetTitle();
     int GetCompletion();
     QString GetDescription();
+    QString StreamOut();
 private:
     QString DueDate;
     QString Title;

@@ -33,4 +33,8 @@ QString Task::GetDescription()
 {
     return Description;
 }
+QString Task::StreamOut()
+{
+    return QString("%1,%2,%3,%4").arg(this->DueDate,this->Title,QString::number(this->Completion),this->GetDescription());
+}
 

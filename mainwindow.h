@@ -11,6 +11,11 @@
 #include <QAbstractTableModel>
 #include <QTreeWidget>
 #include <QDate>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <fstream>
+#include <iostream>
+#include <sstream>
 #include "task.h"
 namespace Ui {
 class MainWindow;
@@ -26,14 +31,17 @@ public:
     QTreeWidget *treeTable;
     void AddElement(Task task,QTreeWidget *treeTable);
     QLinkedList<Task>* GetTaskList();
+    void PopulateTable(QTreeWidget *tree);
+
 private:
     void SetMainLayout(QVBoxLayout *layout);
     void SetFilters(QHBoxLayout *filterslayout);
     void CreateMenuBar();
     void SetTable(QTableWidget *table);
     void SetTreeTable(QTreeWidget *treeTable);
-    void Exit();
-    void PopulateTable(QTreeWidget *tree);
+    void ReadFromFile(QString path,QLinkedList<Task>* taskList);
+    void WriteToFile(QString path,QLinkedList<Task>* taskList);
+
     void HideAllItems();
 
     Ui::MainWindow *ui;
@@ -51,14 +59,18 @@ private:
     QCheckBox *cboxCompleted;
     QPushButton *btnAddTask;
 
-    QTableWidget *table;
     QLinkedList<Task> *tasks;
 
-
+    QString filePath;
 
 private slots:
      void AddNewTask();
      void Filter();
+     void ItemSelected(QTreeWidgetItem*);
+     void Exit();
+     void LoadFromFile();
+     void SaveToFile();
+     void Save();
 
 };
 

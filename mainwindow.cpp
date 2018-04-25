@@ -19,14 +19,12 @@ MainWindow::MainWindow()
     btnAddTask = new QPushButton(tr("&Add Task"));
     connect(btnAddTask, SIGNAL (released()),this, SLOT (AddNewTask()));
     tasks = new QLinkedList<Task>();
-    QLinkedList<Task> *backUp;
+//    QLinkedList<Task> *backUp;
 
 
     this->CreateMenuBar();
     treeTable = new QTreeWidget();
     this->SetTreeTable(treeTable);
-//    table = new QTableWidget(this);
-//    this->SetTable(table);
 
     layout->addWidget(treeTable);
     layout->addWidget(btnAddTask);
@@ -68,8 +66,6 @@ void MainWindow::SetFilters(QHBoxLayout *filtersLayout)
     rbtnThisWeek->setText(tr("&This Week"));
     cboxCompleted->setText(tr("&Not Completed"));
 
-
-
     connect(rbtnAll,SIGNAL(clicked()),this,SLOT(Filter()));
     connect(rbtnOverdue,SIGNAL(clicked()),this,SLOT(Filter()));
     connect(rbtnToday,SIGNAL(clicked()),this,SLOT(Filter()));
@@ -89,12 +85,13 @@ void MainWindow::CreateMenuBar()
 {
 
     loadFile = new QAction(tr("&Load from file"), this);
+        connect(loadFile, &QAction::triggered, this, &MainWindow::LoadFromFile);
 
     saveFile = new QAction(tr("&Save"), this);
+        connect(saveFile, &QAction::triggered, this, &MainWindow::Save);
     saveFile->setDisabled(true);
     saveToFile = new QAction(tr("&Save to file"), this);
-
-
+        connect(saveToFile, &QAction::triggered, this, &MainWindow::SaveToFile);
 
     exitProgram = new QAction(tr("&Exit"), this);
     connect(exitProgram, &QAction::triggered, this, &MainWindow::Exit);
@@ -105,7 +102,6 @@ void MainWindow::CreateMenuBar()
     fileMenu->addAction(saveFile);
     fileMenu->addAction(saveToFile);
     fileMenu->addAction(exitProgram);
-
 }
 
 void MainWindow::AddNewTask()
@@ -129,7 +125,6 @@ void MainWindow::PopulateTable(QTreeWidget *treeTable)
     for(QLinkedList<Task>::iterator it=tasks->begin();it!=tasks->end();it++)
     {
         this->AddElement(it.i->t,treeTable);
-
     }
 }
 
@@ -147,6 +142,9 @@ void MainWindow::SetTreeTable(QTreeWidget *treeTable)
     treeTable->setHeaderLabels(tableHeader);
     treeTable->setColumnWidth(0,70);
     treeTable->setColumnWidth(2,140);
+
+    connect(treeTable,SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
+            this,SLOT(ItemSelected(QTreeWidgetItem*)));
 }
 
 void MainWindow::AddElement(Task task,QTreeWidget *treeTable)
@@ -172,7 +170,6 @@ void MainWindow::Filter()
     QDate dateC=QDate::currentDate();
     if(cboxCompleted->isChecked())
     {
-
         if(rbtnAll->isChecked())
         {
             this->HideAllItems();
@@ -248,16 +245,109 @@ void MainWindow::Filter()
 }
 void MainWindow::HideAllItems()
 {
-
-QTreeWidgetItemIterator it(treeTable);
-while (*it) {
-   (*it)->setHidden(true);
-  ++it;
-}
+    QTreeWidgetItemIterator it(treeTable);
+    while (*it)
+    {
+        (*it)->setHidden(true);
+         ++it;
+    }
 }
 
 
 void MainWindow::Exit()
 {
     exit(0);
+}
+
+void MainWindow::LoadFromFile()
+{
+    QFileDialog fileDailog(this);
+    fileDailog.setFileMode(QFileDialog::ExistingFile);
+    fileDailog.setNameFilter(tr("Text (*.txt)"));
+    fileDailog.setViewMode(QFileDialog::List);
+
+
+    QStringList fileNames;
+    if (fileDailog.exec()){
+        fileNames = fileDailog.selectedFiles();
+        this->filePath = ((QString)fileNames.at(0)).toUtf8().constData();
+        saveFile->setEnabled(true);
+        ReadFromFile(filePath,tasks);
+        PopulateTable(treeTable);
+//        qInfo()<<filePath;
+    }
+}
+
+void MainWindow::SaveToFile()
+{
+//    QFileDialog fileDailog(this);
+//    fileDailog.setFileMode(QFileDialog::AnyFile);
+//    fileDailog.setNameFilter(tr("Text (*.txt)"));
+//    fileDailog.setViewMode(QFileDialog::List);
+//    QStringList fileNames;
+//    if (fileDailog.exec()){
+//        fileNames = fileDailog.selectedFiles();
+//        this->filePath = ((QString)fileNames.at(0)).toUtf8().constData();
+//        saveFile->setEnabled(true);
+//
+//    }
+    this->filePath = QFileDialog::getSaveFileName(this,
+            tr("Save TaskList"), "",
+            tr("TestFile (*.txt);"));
+    WriteToFile(filePath,tasks);
+    qInfo()<<filePath;
+}
+
+void MainWindow::Save()
+{
+    WriteToFile(filePath,tasks);
+}
+
+
+
+void MainWindow::ReadFromFile(QString path,QLinkedList<Task>* taskList)
+{
+    taskList->clear();
+    QFile file(path);
+    if(!file.open(QIODevice::ReadOnly)) {
+        QMessageBox::information(0, "error", file.errorString());
+    }
+
+    QTextStream in(&file);
+    Task *t;
+    while(!in.atEnd()) {
+        QString line = in.readLine();
+        QStringList fields = line.split(",");
+        t=new Task(fields.at(0),fields.at(1),fields.at(2).toInt(),fields.at(3));
+        taskList->append(*t);
+    }
+    file.close();
+}
+
+void MainWindow::WriteToFile(QString path,QLinkedList<Task>* taskList)
+{
+    QFile file(path);
+    if(!file.open(QIODevice::ReadWrite)) {
+        QMessageBox::information(0, "error", file.errorString());
+    }
+
+    QTextStream out(&file);
+    QString task;
+    for(QLinkedList<Task>::iterator it=taskList->begin();it!=taskList->end();it++)
+    {
+        task=it.i->t.StreamOut();
+        out<<task<<endl;
+    }
+    file.close();
+}
+
+void MainWindow::ItemSelected(QTreeWidgetItem* item)
+{
+
+//    qInfo()<<item->text(1);
+    AddTask taskEdit;
+    taskEdit.setModal(true);
+    taskEdit.SetDataToUpdate(item->text(1),item->text(2),(item->text(3)).toInt(),item->text(4));
+    taskEdit.setOrigin(this);
+    taskEdit.exec();
 }

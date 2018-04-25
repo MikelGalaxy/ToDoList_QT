@@ -17,6 +17,7 @@ public:
     explicit AddTask(QWidget *parent = 0);
     inline void setOrigin(MainWindow *origin){ this->origin = origin; }
     void SetDataToUpdate(QString OldDueDate,QString OldTitle,int OldCompletion,QString OldDescription);
+    void FindAndUpdateItem(Task t);
 
 private:
     Ui::AddTask *ui;
@@ -26,6 +27,7 @@ private:
     QString Title;
     int Completion;
     QString Description;
+    Task *mTask;
 
 private slots:
     void on_cancelbtn_clicked();
