@@ -32,7 +32,7 @@ void AddTask::SetDataToUpdate(QString OldDueDate,QString OldTitle,int OldComplet
     this->isNew=false;
     ui->saveAddbtn->setText(tr("&Save"));
     this->setWindowTitle(tr("Update task"));
-    QDate Olddate = QDate::fromString("yyyy/MM/dd",OldDueDate);
+    QDate Olddate = QDate::fromString(OldDueDate,"yyyy/MM/dd");
     ui->dateEdit->setDate(Olddate);
     ui->titleEdit->setText(OldTitle);
     ui->completionSlider->setValue(OldCompletion);

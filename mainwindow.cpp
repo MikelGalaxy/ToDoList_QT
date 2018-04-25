@@ -167,11 +167,12 @@ void MainWindow::AddElement(Task task,QTreeWidget *treeTable)
 
 void MainWindow::Filter()
 {
-
+    QTreeWidgetItemIterator it(treeTable);
     QString currdate = QDate::currentDate().toString("yyyy/MM/dd");
+    QDate dateC=QDate::currentDate();
     if(cboxCompleted->isChecked())
     {
-        QTreeWidgetItemIterator it(treeTable);
+
         if(rbtnAll->isChecked())
         {
             this->HideAllItems();
@@ -180,6 +181,16 @@ void MainWindow::Filter()
                (*it)->setHidden(false);
               ++it;
             }
+        }else if(rbtnOverdue->isChecked())
+        {
+            this->HideAllItems();
+            while (*it) {
+              QDate taskDate=QDate::fromString((*it)->text(1),"yyyy/MM/dd");
+              if ((*it)->text(3)=="100" && taskDate<dateC)
+               (*it)->setHidden(false);
+              ++it;
+            }
+
         }else if(rbtnToday->isChecked())
         {
             this->HideAllItems();
@@ -188,20 +199,33 @@ void MainWindow::Filter()
                (*it)->setHidden(false);
               ++it;
             }
+        }else if(rbtnThisWeek->isChecked())
+        {
+            this->HideAllItems();
+            while (*it) {
+                QDate taskDate=QDate::fromString((*it)->text(1),"yyyy/MM/dd");
+              if ((*it)->text(3)=="100" && taskDate.weekNumber()==dateC.weekNumber())
+               (*it)->setHidden(false);
+              ++it;
+            }
         }
-
-
-
-
-
     }else{
-        QTreeWidgetItemIterator it(treeTable);
         if(rbtnAll->isChecked())
         {
             while (*it) {
                (*it)->setHidden(false);
               ++it;
             }
+        }else if(rbtnOverdue->isChecked())
+        {
+            this->HideAllItems();
+            while (*it) {
+              QDate taskDate=QDate::fromString((*it)->text(1),"yyyy/MM/dd");
+              if (taskDate<dateC)
+               (*it)->setHidden(false);
+              ++it;
+            }
+
         }else if(rbtnToday->isChecked())
         {
             this->HideAllItems();
@@ -210,13 +234,16 @@ void MainWindow::Filter()
                (*it)->setHidden(false);
               ++it;
             }
+        }else if(rbtnThisWeek->isChecked())
+        {
+            this->HideAllItems();
+            while (*it) {
+                QDate taskDate=QDate::fromString((*it)->text(1),"yyyy/MM/dd");
+              if (taskDate.weekNumber()==dateC.weekNumber())
+               (*it)->setHidden(false);
+              ++it;
+            }
         }
-
-
-
-
-
-
     }
 }
 void MainWindow::HideAllItems()
