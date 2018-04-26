@@ -29,8 +29,8 @@ MainWindow::MainWindow()
 
     PopulateTable(treeTable);
     this->setWindowTitle("ToDo List QT");
-    this->setMinimumSize(640, 480);
-    this->resize(640, 480);
+//    this->setMinimumSize(680, 480);
+    this->resize(680, 480);
 }
 
 MainWindow::~MainWindow()
@@ -78,7 +78,6 @@ void MainWindow::SetFilters(QHBoxLayout *filtersLayout)
 
 void MainWindow::CreateMenuBar()
 {
-
     loadFile = new QAction(tr("&Load from file"), this);
         connect(loadFile, &QAction::triggered, this, &MainWindow::LoadFromFile);
 
@@ -108,7 +107,6 @@ void MainWindow::AddNewTask()
     taskAdd.exec();
 }
 
-
 QLinkedList<Task>* MainWindow::GetTaskList()
 {
     return tasks;
@@ -121,8 +119,8 @@ void MainWindow::PopulateTable(QTreeWidget *treeTable)
     {
         this->AddElement(it.i->t,treeTable);
     }
+    this->Filter();
 }
-
 
 void MainWindow::SetTreeTable(QTreeWidget *treeTable)
 {
@@ -140,6 +138,7 @@ void MainWindow::SetTreeTable(QTreeWidget *treeTable)
 
     connect(treeTable,SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
             this,SLOT(ItemSelected(QTreeWidgetItem*)));
+    treeTable->hideColumn(0);
 }
 
 void MainWindow::AddElement(Task task,QTreeWidget *treeTable)
@@ -154,8 +153,6 @@ void MainWindow::AddElement(Task task,QTreeWidget *treeTable)
     itm->setText(2,task.GetTitle());
     itm->setText(3,QString::number(task.GetCompletion()));
     itm->setText(4,task.GetDescription());
-
-
 }
 
 void MainWindow::Filter()
@@ -301,6 +298,9 @@ void MainWindow::ReadFromFile(QString path,QLinkedList<Task>* taskList)
     }
     file.close();
     QMessageBox::information(this, "Loaded", tr("List loaded"));
+
+
+
 }
 
 void MainWindow::WriteToFile(QString path,QLinkedList<Task>* taskList)

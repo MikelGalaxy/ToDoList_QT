@@ -36,6 +36,7 @@ private slots:
     void on_saveAddbtn_clicked();
     void on_plainTextEdit_textChanged();
     void on_titleEdit_textChanged(const QString &arg1);
+    void on_dateEdit_userDateChanged(const QDate &date);
 };
 
 #endif // ADDTASK_H

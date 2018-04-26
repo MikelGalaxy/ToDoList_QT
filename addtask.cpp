@@ -54,12 +54,14 @@ void AddTask::on_saveAddbtn_clicked()
 
         this->origin->AddElement(*(nTask),(this->origin->treeTable));
         this->origin->GetTaskList()->append(*(nTask));
+        this->origin->PopulateTable(this->origin->treeTable);
 
     }else
     {
         FindAndUpdateItem(*(nTask));
         this->origin->PopulateTable(this->origin->treeTable);
     }
+        delete(nTask);
         this->close();
 }
 void AddTask::FindAndUpdateItem(Task t)
@@ -90,6 +92,11 @@ void AddTask::on_plainTextEdit_textChanged()
 }
 
 void AddTask::on_titleEdit_textChanged(const QString &arg1)
+{
+    this->CanSave();
+}
+
+void AddTask::on_dateEdit_userDateChanged(const QDate &date)
 {
     this->CanSave();
 }
