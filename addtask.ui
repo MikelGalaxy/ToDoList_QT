@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
@@ -49,7 +52,11 @@
        </spacer>
       </item>
       <item>
-       <widget class="QLineEdit" name="titleEdit"/>
+       <widget class="QLineEdit" name="titleEdit">
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(234, 248, 255);</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </item>
@@ -64,6 +71,9 @@
       </item>
       <item>
        <widget class="QDateEdit" name="dateEdit">
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(234, 248, 255);</string>
+        </property>
         <property name="frame">
          <bool>true</bool>
         </property>
@@ -98,6 +108,9 @@
       </item>
       <item>
        <widget class="QSlider" name="completionSlider">
+        <property name="styleSheet">
+         <string notr="true">font: 9pt &quot;MS Shell Dlg 2&quot;;</string>
+        </property>
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
@@ -119,6 +132,9 @@
       </item>
       <item alignment="Qt::AlignVCenter">
        <widget class="QPlainTextEdit" name="plainTextEdit">
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(234, 248, 255);</string>
+        </property>
         <property name="frameShape">
          <enum>QFrame::Box</enum>
         </property>
@@ -133,6 +149,9 @@
      <layout class="QHBoxLayout" name="horizontalLayout_5">
       <item>
        <widget class="QPushButton" name="saveAddbtn">
+        <property name="styleSheet">
+         <string notr="true"/>
+        </property>
         <property name="text">
          <string>Save/Add</string>
         </property>

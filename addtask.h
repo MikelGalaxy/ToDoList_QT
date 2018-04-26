@@ -18,6 +18,7 @@ public:
     inline void setOrigin(MainWindow *origin){ this->origin = origin; }
     void SetDataToUpdate(QString OldDueDate,QString OldTitle,int OldCompletion,QString OldDescription);
     void FindAndUpdateItem(Task t);
+    void CanSave();
 
 private:
     Ui::AddTask *ui;
@@ -33,8 +34,8 @@ private slots:
     void on_cancelbtn_clicked();
     void on_completionSlider_valueChanged(int value);
     void on_saveAddbtn_clicked();
-
-
+    void on_plainTextEdit_textChanged();
+    void on_titleEdit_textChanged(const QString &arg1);
 };
 
 #endif // ADDTASK_H

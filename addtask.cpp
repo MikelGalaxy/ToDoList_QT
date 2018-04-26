@@ -15,13 +15,13 @@ AddTask::AddTask(QWidget *parent) :
     this->isNew=true;
     ui->saveAddbtn->setText(tr("&Add"));
     this->setWindowTitle(tr("Add new task"));
+    ui->saveAddbtn->setEnabled(false);
 }
 
 void AddTask::on_cancelbtn_clicked()
 {
     this->close();
 }
-
 
 void AddTask::on_completionSlider_valueChanged(int value)
 {
@@ -39,9 +39,8 @@ void AddTask::SetDataToUpdate(QString OldDueDate,QString OldTitle,int OldComplet
     ui->completionSlider->setValue(OldCompletion);
     ui->plainTextEdit->setPlainText(OldDescription);
     mTask=new Task(OldDueDate,OldTitle,OldCompletion,OldDescription);
+     ui->saveAddbtn->setEnabled(false);
 }
-
-
 
 void AddTask::on_saveAddbtn_clicked()
 {
@@ -65,7 +64,6 @@ void AddTask::on_saveAddbtn_clicked()
 }
 void AddTask::FindAndUpdateItem(Task t)
 {
-
     for(QLinkedList<Task>::iterator it=this->origin->GetTaskList()->begin();it!=this->origin->GetTaskList()->end();it++)
     {
             if(it.i->t.GetCompletion()==mTask->GetCompletion() && it.i->t.GetDueDate()==mTask->GetDueDate() &&
@@ -74,4 +72,24 @@ void AddTask::FindAndUpdateItem(Task t)
                 it.i->t=t;
             }
     }
+}
+
+void AddTask::CanSave()
+{
+    if(ui->plainTextEdit->toPlainText().length()>0 && ui->titleEdit->text().length()>0)
+    {
+       ui->saveAddbtn->setEnabled(true);
+    }else{
+       ui->saveAddbtn->setEnabled(false);
+    }
+}
+
+void AddTask::on_plainTextEdit_textChanged()
+{
+    this->CanSave();
+}
+
+void AddTask::on_titleEdit_textChanged(const QString &arg1)
+{
+    this->CanSave();
 }

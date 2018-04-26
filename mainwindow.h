@@ -41,7 +41,6 @@ private:
     void SetTreeTable(QTreeWidget *treeTable);
     void ReadFromFile(QString path,QLinkedList<Task>* taskList);
     void WriteToFile(QString path,QLinkedList<Task>* taskList);
-
     void HideAllItems();
 
     Ui::MainWindow *ui;
@@ -60,7 +59,6 @@ private:
     QPushButton *btnAddTask;
 
     QLinkedList<Task> *tasks;
-
     QString filePath;
 
 private slots:
